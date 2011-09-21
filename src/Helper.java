@@ -58,11 +58,11 @@ public class Helper {
 			if(Jacobian.seat.equals("S") || Jacobian.seat.equals("N"))
 				sc = Jacobian.scoreN - Jacobian.level;
 			else sc = Jacobian.scoreW - Jacobian.level;
-			sc -= 7;
+			sc -= 6;
 			if(sc == 0) overs = "=";
 			if(sc < 0) overs = "" + sc;
 			if(sc > 0) overs = "+" + sc;
-			int finalScore = calcScore(Jacobian.trumph, Jacobian.level, Jacobian.seat, Jacobian.vul, sc);
+			int finalScore = calcScore(Jacobian.cont.charAt(2) + "", Jacobian.level, Jacobian.cont.substring(Jacobian.cont.length()-1), Jacobian.vul, sc);
 			int j = 0;
 			while(!seats[j].equals(Jacobian.seat)) j++;
 			if(!(Jacobian.playerSeat.equals(seats[j]) || Jacobian.playerSeat.equals(opposite[j])))
@@ -83,7 +83,8 @@ public class Helper {
 					{
 						score += 4*(10 + level*30);
 						score += overs*400;
-						if(level >= 3)score += 500;
+						if(level >= 3 || 4*(10 + level*30) >= 100 ) score += 500;
+						else score += 50;
 						if(level >= 6) score += 750;
 						if(level >= 7) score += 1500;
 					}
@@ -91,7 +92,8 @@ public class Helper {
 					{
 						score += 4*(10 + level*30);
 						score += overs*200;
-						if(level >= 3)score += 300;
+						if(level >= 3 || 4*(10 + level*30) >= 100) score += 300;
+						else score += 50;
 						if(level >= 6) score += 500;
 						if(level >= 7) score += 1000;
 					}
@@ -104,7 +106,8 @@ public class Helper {
 						{
 							score += 2*(10 + level*30);
 							score += overs*200;
-							if(level >= 3)score += 500;
+							if(level >= 3 || 2*(10 + level*30) >= 100) score += 500;
+							else score += 50;
 							if(level >= 6) score += 750;
 							if(level >= 7) score += 1500;
 						}
@@ -112,7 +115,8 @@ public class Helper {
 						{
 							score += 2*(10 + level*30);
 							score += overs*100;
-							if(level >= 3)score += 300;
+							if(level >= 3 || 2*(10 + level*30)>= 100) score += 300;
+							else score += 50;
 							if(level >= 6) score += 500;
 							if(level >= 7) score += 1000;
 						}
@@ -122,14 +126,16 @@ public class Helper {
 						if(vul.equals("All") || vul.contains(seat))
 						{
 							score += 10 + (level + overs)*30;
-							if(level >= 3)score += 500;
+							if(level >= 3 || 10 + (level)*30 >= 100 )score += 500;
+							else score += 50;
 							if(level >= 6) score += 750;
 							if(level >= 7) score += 1500;
 						}
 						else
 						{
-							score += 10 + (level + overs)*30;
-							if(level >= 3)score += 300;
+							score += 10 + (level + overs)*30 ;
+							if(level >= 3 ||  10 + (level)*30 >= 100) score += 300;
+							else score += 50;
 							if(level >= 6) score += 500;
 							if(level >= 7) score += 1000;
 						}
@@ -146,7 +152,8 @@ public class Helper {
 						{
 							score += 4*(level*30);
 							score += overs*400;
-							if(level >= 4)score += 500;
+							if(level >= 4 || 4*(level*30) >= 100)score += 500;
+							else score += 50;
 							if(level >= 6) score += 750;
 							if(level >= 7) score += 1500;
 						}
@@ -154,7 +161,8 @@ public class Helper {
 						{
 							score += 4*(level*30);
 							score += overs*200;
-							if(level >= 4)score += 300;
+							if(level >= 4 || 4*(level*30) >= 100) score += 300;
+							else score += 50;
 							if(level >= 6) score += 500;
 							if(level >= 7) score += 1000;
 						}
@@ -167,15 +175,17 @@ public class Helper {
 							{
 								score += 2*(level*30);
 								score += overs*200;
-								if(level >= 4)score += 500;
+								if(level >= 4 || 2*(level*30) >= 100) score += 500;
+								else score += 50;
 								if(level >= 6) score += 750;
 								if(level >= 7) score += 1500;
 							}
 							else
 							{
-								score += 2*(level*30);
+								score += 2*(level*30) ;
 								score += overs*100;
-								if(level >= 4)score += 300;
+								if(level >= 4 || 2*(level*30) >= 100) score += 300;
+								else score += 50;
 								if(level >= 6) score += 500;
 								if(level >= 7) score += 1000;
 							}
@@ -185,13 +195,16 @@ public class Helper {
 							if(vul.equals("All") || vul.contains(seat))
 							{
 								score += (level + overs)*30;
-								if(level >= 4)score += 500;
+								if(level >= 4 || level*30 >= 100) score += 500;
+								else score += 50;
 								if(level >= 6) score += 750;
 								if(level >= 7) score += 1500;
 							}
 							else
 							{
-								if(level >= 4) score += 300;
+								score += (level + overs)*30;
+								if(level >= 4 || level*30 >= 100) score += 300;
+								else score += 50;
 								if(level >= 6) score += 500;
 								if(level >= 7) score += 1000;
 							}
@@ -206,7 +219,8 @@ public class Helper {
 						{
 							score += 4*(level*20);
 							score += overs*400;
-							if(level >= 5)score += 500;
+							if(level >= 5 || 4*(level*20) >= 100) score += 500;
+							else score += 50;
 							if(level >= 6) score += 750;
 							if(level >= 7) score += 1500;
 						}
@@ -214,7 +228,8 @@ public class Helper {
 						{
 							score += 4*(level*20);
 							score += overs*200;
-							if(level >= 5)score += 300;
+							if(level >= 5 || 4*(level*20) >= 100) score += 300;
+							else score += 50;
 							if(level >= 6) score += 500;
 							if(level >= 7) score += 1000;
 						}
@@ -227,7 +242,8 @@ public class Helper {
 							{
 								score += 2*(level*20);
 								score += overs*200;
-								if(level >= 5)score += 500;
+								if(level >= 5 || 2*(level*20) >= 100) score += 500;
+								else score += 50;
 								if(level >= 6) score += 750;
 								if(level >= 7) score += 1500;
 							}
@@ -235,7 +251,8 @@ public class Helper {
 							{
 								score += 2*(level*20);
 								score += overs*100;
-								if(level >= 5)score += 300;
+								if(level >= 5 || 2*(level*20) >= 100) score += 300;
+								else score += 50;
 								if(level >= 6) score += 500;
 								if(level >= 7) score += 1000;
 							}
@@ -245,13 +262,16 @@ public class Helper {
 							if(vul.equals("All") || vul.contains(seat))
 							{
 								score += (level + overs)*20;
-								if(level >= 5)score += 500;
+								if(level >= 5 || (level)*20 >= 100) score += 500;
+								else score += 50;
 								if(level >= 6) score += 750;
 								if(level >= 7) score += 1500;
 							}
 							else
 							{
-								if(level >= 5) score += 300;
+								score += (level + overs)*20;
+								if(level >= 5 || (level)*20 >= 100) score += 300;
+								else score += 50;
 								if(level >= 6) score += 500;
 								if(level >= 7) score += 1000;
 							}

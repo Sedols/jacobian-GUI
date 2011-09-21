@@ -1,0 +1,19 @@
+jacobian
+
+newplay
+
+seat West
+
+vul EW
+
+hand AKQJT98.67.89.76
+
+contract 4DXN
+
+dummy 23.2345.234.2345
+
+show N SA
+
+show E S2
+
+show S S3

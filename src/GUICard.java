@@ -41,14 +41,14 @@ public class GUICard extends JButton implements Comparable<GUICard> {
 		if (c == 'A' || c == 'K' || c == 'Q')
 			return ""+name.charAt(1);
 		else
-			return  name.charAt(1) +"&nbsp;";
+			return  "&nbsp;" + name.charAt(1);
 
 	}
 	public void showCard() {
 		setSize(Helper.dim);
 		this.setIcon(null);
 		this.setDisabledIcon(null);
-		this.setText("<html>" + "<br>" +  first(name.charAt(1))  + "<br>"  + suit(name.charAt(0)) + "</html>");
+		this.setText("<html>" + "<br>" +  "<p>" + first(name.charAt(1))  + "</p>"  + "<p>" +  suit(name.charAt(0)) + "</p></html>");
 		if(name.charAt(0) == 'S' || name.charAt(0) == 'C')
 		this.setForeground(Color.black);
 		else 
@@ -92,6 +92,9 @@ public class GUICard extends JButton implements Comparable<GUICard> {
 	public String getName() { return name; }
 	public int compareTo(GUICard o)
 	{
+		if(o.name.equals(name)) return 0;
+		if(o.name.equals("X")) return -1;
+		if(name.equals("X")) return 1;
 		if(Jacobian.trumph != null)
 		{
 		if(o.getSuit().equals(Jacobian.trumph) && !this.getSuit().equals(Jacobian.trumph))
@@ -125,5 +128,14 @@ public class GUICard extends JButton implements Comparable<GUICard> {
 				o = i;
 		}
 		return o - t;
+	}
+	public void become(GUICard o) {
+		name = o.getName();
+		setText(o.getText());
+		ic = o.ic;
+		this.setPreferredSize(new Dimension(o.getWidth(), o.getHeight()));
+		setIcon(o.getIcon());
+		setDisabledIcon(o.getDisabledIcon());
+		this.setForeground(o.getForeground());
 	}
 }

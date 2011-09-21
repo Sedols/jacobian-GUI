@@ -50,18 +50,21 @@ public class GUIPlayer {
 		}
 		Arrays.sort(this.hand);
 		for(int k2 = 0; k2 < this.hand.length; k2++)
-			if(this.hand[k2] != null) 
+			if(this.hand[k2] != null ) 
 			{
+				if(!this.hand[k2].getName().equals("X"))
 				this.hand[k2].updateUI();
 			}
 	}
 	GUICard[] getHand() { return hand; }
 	public void setSize(Dimension d)
 	{
+		if(hand != null)
 		for(int i = 0; i < hand.length; i++)
 		{
 			if(hand[i] != null)
 			{
+		
 				if(i < 12)
 					hand[i].setSize(d);
 				else
@@ -71,10 +74,6 @@ public class GUIPlayer {
 	}
 	public JPanel makeMove(int i, int h, int panelW, int panelH) 
 	{
-		Helper.history.add(hand[i]);
-		if(seat.equals(Jacobian.turnStart))
-			Jacobian.curTurn = hand[i].getSuit();
-		hand[i] = null;
 		return Helper.drawPanel(h - 10, panelW, panelH);	
 	}
 	public JPanel makeMove(String card, int h, int panelW, int panelH) 
@@ -98,5 +97,41 @@ public class GUIPlayer {
 	public void enableButtons() {
 		for(int i = 0; i < hand.length; i++)
 			hand[i].setEnabled(true);
+	}
+	public void removeCard(int i) {
+		Helper.history.add(new GUICard(hand[i].getName()));
+		if(seat.equals(Jacobian.turnStart))
+			Jacobian.curTurn = hand[i].getSuit();
+		for(int j = i; j < 12; j++)
+		{
+			hand[j].become(hand[j+1]);
+		}
+		hand[11 - Helper.number].setBackground(Helper.bgColor);
+		hand[11 - Helper.number].setForeground(Helper.bgColor);
+		hand[11 - Helper.number].setSelected(false);
+		hand[11 - Helper.number].setFocusable(false);
+		hand[11 - Helper.number].setName("X");
+		hand[11 - Helper.number].setText("");
+		hand[11 - Helper.number].setBorder(BorderFactory.createEmptyBorder());
+		hand[11 - Helper.number].setEnabled(false);
+	}
+	public void removeCard(String card, int i) {
+		if (i > 0)
+		{
+			for(int j = i - 1; j < i; j++)
+			{
+				hand[j].become(hand[j+1]);
+			}
+		}
+		hand[11 - Helper.number].setSize(Helper.dim);
+		hand[11 - Helper.number].setIcon(null);
+		hand[11 - Helper.number].setBackground(Helper.bgColor);
+		hand[11 - Helper.number].setForeground(Helper.bgColor);
+		hand[11 - Helper.number].setSelected(false);
+		hand[11 - Helper.number].setFocusable(false);
+		hand[11 - Helper.number].setName("X");
+		hand[11 - Helper.number].setText("");
+		hand[11 - Helper.number].setBorder(BorderFactory.createEmptyBorder());
+		hand[11 - Helper.number].setEnabled(false);
 	}
 }

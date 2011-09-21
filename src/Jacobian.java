@@ -18,13 +18,13 @@ public class Jacobian extends JFrame implements ActionListener{
 	private static Container contents;
 
 	//protocol related 
-	static String protocol, mode;
+	static String protocol, mode, ID = "";
 	
 	// game related
 	private static boolean started = false;
 	public static int scoreN = 0, scoreW = 0;
 	static int level;
-	public static String turnStart, trumph, curTurn, lastTurn, seat,dumHand, cont, vul, playerSeat,hand="";
+	public static String turnStart, trumph, curTurn, lastTurn = null, lastTurnDum = null, seat,dumHand, cont, vul, playerSeat,hand="";
 	static JLabel zone;
 	static boolean isDoubled,isRedoubled,notrumph = false;
 	
@@ -133,9 +133,31 @@ public class Jacobian extends JFrame implements ActionListener{
 				if(cardCont[i].isDummy() || i == 2)
 				{
 					newPanel = cardCont[i].doItUser(card, cen.getWidth(), cen.getHeight());
-					if(newPanel != null && (i == 2 || cardCont[0].isDummy()))
+					if(newPanel != null)
 					{
-						lastTurn = card;
+						if(i == 2)
+						{
+							lastTurn = card;
+							if(isWaiting)
+							{
+								isWaiting = false;
+								System.out.println("play " + lastTurn);
+								lastTurn = null;
+							}
+						}
+						else
+						{
+							if(cardCont[0].isDummy())
+							{
+								lastTurnDum = card;
+								if(isWaitingDum)
+								{
+									isWaitingDum = false;
+									System.out.println("play " + lastTurnDum);
+									lastTurnDum = null;
+								}
+							}
+						}
 					}
 				}
 				else
@@ -144,6 +166,7 @@ public class Jacobian extends JFrame implements ActionListener{
 		}
 		if (newPanel != null)
 		{
+			/*
 			if(!first)
 			for(int i = 0; i < 4; i++)
 				if(cardCont[i].isDummy())
@@ -151,7 +174,7 @@ public class Jacobian extends JFrame implements ActionListener{
 					cardCont[i].setHand(dumHand);
 					cardCont[i].reveal();
 					first = true;
-				}			
+				}*/	
 			started = true;
 			p2.remove(cen);
 			cen = newPanel;
@@ -217,9 +240,10 @@ public class Jacobian extends JFrame implements ActionListener{
 		if(s.startsWith("vul ")) return 1;
 		if(s.startsWith("hand ")) return 2;
 		if(s.startsWith("contract ")) return 3;
-		if(s.startsWith("go")) return 4;
+		if(s.equals("go")) return 4;
 		if(s.startsWith("dummy ")) return 5;
 		if(s.startsWith("show ")) return 6;
+		if(s.startsWith("go")) return 7;
 		return -1;
 	}
 	
@@ -229,17 +253,19 @@ public class Jacobian extends JFrame implements ActionListener{
 		while(!Helper.seats[i].equals(seat)) i++;
 		return Helper.seats[(i + k)%4];
 	}
-	
+	private static boolean isWaiting = false,isWaitingDum = false;
 	private static void process(String command)
 	{
+	
 		if(protocol == null)
 		{
 			protocol = command;
+			System.out.println();
 			return;
 		}
 		if(command.startsWith("id"))
 		{
-			cardCont[2].setName(command.substring(3, command.length()));
+			System.out.println("id " + ID);
 			return;
 		}
 		if(protocol.equals("jacobian"))
@@ -247,6 +273,7 @@ public class Jacobian extends JFrame implements ActionListener{
 			if(command.equals("new") || command.equals("newplay") || command.equals("newbidding"))
 			{
 				mode = command;
+				System.out.println();
 				return;
 			}
 			if(mode.equals("newplay"))
@@ -265,14 +292,24 @@ public class Jacobian extends JFrame implements ActionListener{
 						Helper.map.put("N",next(playerSeat ,2));
 						cardCont[1].setSeat(next(playerSeat,3));
 						Helper.map.put("E",next(playerSeat,3));
+						System.out.println();
 						break;
 					case 1:
 						vul = command.substring(4, command.length());
-						URL url = Jacobian.class.getResource("images/" + vul + ".png"); 
+						URL url;
+						if(vul.equals("None") || vul.equals("All") || (vul.equals("NS") && vul.contains(playerSeat)))
+							url = Jacobian.class.getResource("images/" + vul + ".png"); 
+						else
+						{
+							if(vul.equals("NS")) url =Jacobian.class.getResource("images/EW.png"); 
+							else  url =Jacobian.class.getResource("images/NS.png");
+						}
 						zone.setIcon(new ImageIcon(url));
+						System.out.println();
 						break;
 					case 2:
 						hand = command.substring(5, command.length());
+						System.out.println();
 						break;
 					case 3:
 						cont = command.substring(9, command.length());
@@ -296,7 +333,9 @@ public class Jacobian extends JFrame implements ActionListener{
 						level = cont.charAt(0) - '0';
 						seat = cont.substring(cont.length()-1);
 						playerSeat = cardCont[2].getSeat();
+						cardCont[2].setName(ID);
 						cardCont[2].setHand(hand);
+						cardCont[2].updateUI();
 						cardCont[2].reveal();
 						i = 0; 
 						while(!Helper.seats[i].equals(seat)) i++;
@@ -311,23 +350,47 @@ public class Jacobian extends JFrame implements ActionListener{
 						i = 0; 
 						while(!cardCont[i].getSeat().equals(seat)) i++;
 						cardCont[(i + 2)%4].setDummy();
+						if(cardCont[2].isDummy()) dumHand = hand;
+						System.out.println();
 						break;
 					case 4:
-						System.out.println("play " + lastTurn);
+						if(lastTurn != null)
+						{
+							System.out.println("play " + lastTurn);
+							lastTurn = null;
+							isWaiting = false;
+						}
+						else
+						{
+							isWaiting = true;
+						}
 						break;
 					case 5:
 						dumHand = command.substring(6, command.length());
 						i = 0; 
 						while(!Helper.seats[i].equals(cardCont[2].getSeat())) i++;
-						if(cardCont[(i + 2)%4].isDummy()) cardCont[(i + 2)%4].enableButtons();
-						cardCont[(i + 2)%4].updateUI();
+						for(int j = 0; j < 4; j++)
+						{
+							if(cardCont[j].getSeat().equals(Helper.opposite[i]) && cardCont[j].isDummy()) cardCont[j].enableButtons();
+							cardCont[j].updateUI();
+						}
+						for(int k = 0; k < 4; k++)
+						{
+							if(cardCont[k].isDummy())
+							{
+								cardCont[k].setHand(dumHand);
+								cardCont[k].reveal();
+								break;
+							}
+						}
+						System.out.println();
 						break;
 					case 6:
 						String show = command.substring(5, command.length());	
 						String startSeat = show.charAt(0) + "";
 						if(startSeat.equals(turnStart)) 
 						{
-							curTurn = show.charAt(1) + "";
+							curTurn = show.charAt(2) + "";
 							if(notrumph)
 								trumph = curTurn;
 						}
@@ -335,13 +398,25 @@ public class Jacobian extends JFrame implements ActionListener{
 						{
 							if(cardCont[k].getSeat().equals(startSeat))
 							{
-								
 								cardCont[k].setTurn();
 							}
 							else
 								cardCont[k].removeTurn();
 						}
-						makeMove(startSeat, show.substring(1));
+						makeMove(startSeat, show.substring(2));
+						System.out.println();
+						break;
+					case 7:
+						if(lastTurnDum != null)
+						{
+							System.out.println("play " + lastTurnDum);
+							lastTurnDum = null;
+							isWaitingDum = false;
+						}
+						else
+						{
+							isWaitingDum = true;
+						}
 						break;
 					default: break;
 				}
@@ -352,11 +427,23 @@ public class Jacobian extends JFrame implements ActionListener{
 	public static void main(String [] args) throws IOException  {
 	  jacobian = new Jacobian();
 	  jacobian.setVisible(true);
+	  String response = JOptionPane.showInputDialog(null,
+			  "What is your name?",
+			  "Enter your name",
+			  JOptionPane.QUESTION_MESSAGE);
+	  ID = response;
+	  cardCont[2].setName(ID);
 	  BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	  String str = "";
 	  while (str != null) {
 	       str = in.readLine();
-	       process(str);
+	       try {
+	    	   process(str);
+	       }
+	       catch(Exception e)
+	       {
+	    	System.out.println("Sorry mate, wrong protocol: " + e);   
+	       }
 	  }
 	}
 } // class Jacobian

@@ -1,6 +1,8 @@
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Arrays;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -90,8 +92,9 @@ public class PlayerContainer extends JPanel{
 	private boolean noSuit(String cur)
 	{
 		GUICard[] c = player.getHand();
-		for(int i = 0; i < c.length; i++)
+		for(int i = 0; i < 11 - Helper.number; i++)
 			if(c[i] != null)
+				if(!c[i].getName().equals("X"))
 				if(c[i].getSuit().equals(cur))
 					return false;
 		return true;
@@ -113,6 +116,7 @@ public class PlayerContainer extends JPanel{
 		for(int i = 0; i < 13; i++)
 		{
 			if(cards[i] != null)
+			if(!cards[i].getName().equals("X"))
 			if(card.equals(cards[i].getName()))
 			{
 				if(player.getSeat().equals(Jacobian.turnStart))
@@ -120,18 +124,18 @@ public class PlayerContainer extends JPanel{
 					Jacobian.curTurn = cards[i].getSuit();
 					if(Jacobian.notrumph)
 						Jacobian.trumph = Jacobian.curTurn;
-					remove(cards[i]);
-					updateUI();
 					player.removeTurn();
+					player.removeCard(i);
+					updateUI();
 					return player.makeMove(i, getHeight(), w, h);
 				}
 				else
 				{
 					if((thisSuit).equals(Jacobian.curTurn) || noSuit(Jacobian.curTurn))
 					{
-						remove(cards[i]);
-						updateUI();
 						player.removeTurn();
+						player.removeCard(i);
+						updateUI();
 						return player.makeMove(i, getHeight(), w, h);
 					}
 					
@@ -149,11 +153,15 @@ public class PlayerContainer extends JPanel{
 			if(Jacobian.notrumph)
 				Jacobian.trumph = Jacobian.curTurn;
 		}
-		remove(cards[Helper.number + 1]);
+		player.removeCard(card, 11 - Helper.number);
 		updateUI();
 		player.removeTurn();
 		return player.makeMove(card , getHeight(), w, h);
 
+	}
+	public GUICard[] getHand()
+	{
+		return player.getHand();
 	}
 	public void reveal()
 	{
